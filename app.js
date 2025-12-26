@@ -43,8 +43,7 @@ class MessageService {
     };
 
     // Add new message to the list
-    this.messages = message;
-    // this.messages.push(message);
+    this.messages.push(message);
 
     return message;
   }
@@ -109,14 +108,10 @@ app.get("/room/:roomId/game", function (req, res) {
 });
 
 app.get("/newroom/:roomId", function (req, res) {
-  app.use(`/newroom/${req.params.roomId}`, new MessageService());
-  //sending file
   res.sendFile(path.join(__dirname + "/public/new-game.html"));
 });
 
 app.get("/newroom/:roomId/game", function (req, res) {
-  app.use(`/newroom/${req.params.roomId}/game`, new MessageService());
-  //sending file
   res.sendFile(path.join(__dirname + "/public/new-game.html"));
 });
 
@@ -147,6 +142,10 @@ app.post("/save", async function (req, res) {
     res.status(500).send("Database error");
   }
 });
+
+// Register message services for Socket.io (after all Express routes)
+const messageService = new MessageService();
+app.use('/messages', messageService);
 
 // Start the server
 const start = async () => {
